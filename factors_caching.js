@@ -1,9 +1,12 @@
+// input check - check length of array
 var checkArrayLength = function(arr){
   if (arr.length == 0)
     throw new Error("Invalid input. Should have at least 1 element")
 }
 
 
+
+// find factors of given num in arr
 var findFactors = function(num, arr){
   checkArrayLength(arr);
 
@@ -19,28 +22,44 @@ var findFactors = function(num, arr){
 }
 
 
+
+// Cache factors of a given number
 var cacheFactors = function(cache, num, arr){
   if(cache[num] == undefined)
     cache[num] = findFactors(num, arr);
 }
 
 
+
+// Get factor set from input array without caching
 var makeFactorSet = function(numArr){
+  var start = new Date().getTime();
   checkArrayLength(numArr);
   var arrLen = numArr.length;
   var factorSet = {};
 
   for(var i=0; i< arrLen; i++){
-    var mightBeFactors = numArr.slice(i,arrLen);
     var num = numArr[i];
-    var factors = findFactors(num, mightBeFactors);
+    var factors = findFactors(num, numArr);
 
     factorSet[num] = factors;
   }
-  return factorSet;
+  var elapsed = new Date().getTime() - start;
+
+  console.log("elapsed without cache: " + elapsed);
+  console.log("result: ");
+  console.log(factorSet);
+  console.log();
 }
 
-var cacheMakeFactorSet = function(numArr){
+
+
+// Get factor set from input array and cache intermediate results
+var cacheFactorSet = function(numArr, callback){
+  // set timer
+  var start = new Date().getTime();
+
+  // check input
   checkArrayLength(numArr);
 
   // sort in descending order to utilize caching
@@ -52,15 +71,14 @@ var cacheMakeFactorSet = function(numArr){
 
   for(var i=0; i< arrLen; i++){
 
-    // since array is sorted, no need to look for elements with smaller index
+    // sorted array - look for larger elements only
     var mightBeFactors = numArr.slice(i,arrLen)
     var num = numArr[i]
 
-    // cache[20] = [10,5,2] if it's undefined
+    // 1st level caching
     cacheFactors(cache, num, mightBeFactors);
 
-    // after caching [10,5,2], cache factors of 10,5,2 into cache
-    // cache[10], cache[5], cache[2]
+    // 2nd level caching
     var clen = cache[num].length;
     if (clen > 0){
       for(var j=0; j< clen; j++){
@@ -70,32 +88,48 @@ var cacheMakeFactorSet = function(numArr){
         cacheFactors(cache, factor, fmightBeFactors);
       }
     }
-
-    // console.log(num)
-    // console.log(cache)
-    // console.log(" ")
-
     factorSet[num] = cache[num];
   }
-  return factorSet;
-}
 
+  // calculate time (start to elapsed)
+  var elapsed = new Date().getTime() - start;
 
-var displayFactors = function(factorSet){
+  console.log("elapsed with cache: " + elapsed);
+  console.log("result: ");
   console.log(factorSet);
+  console.log();
 }
 
 
+// sort number in desc order
 var sortDesc = function(a,b){
   return b - a;
 }
 
 
+// display result
+var displayFactorSet = function(){
+  var caller = arguments.callee.caller.name;
+  if (caller == cacheFactorSet){
+    console.log("called by cachefactorset")
+  }
+}
+
+
+
 // Test cases
-var arr = [20,10,7,5,2];
-var cacheTestSet = cacheMakeFactorSet(arr);
-var testSet = makeFactorSet(arr);
+var arr = [2,5,7,10,20];
+var arr2 = [10000,5000,2500,1000,500,250, 100, 50, 25, 10, 5];
+var arr3 = [];
 
-displayFactors(cacheTestSet);
-displayFactors(testSet);
+// smaller set
+cacheFactorSet(arr);
+makeFactorSet(arr);
 
+// larger set
+cacheFactorSet(arr2);
+makeFactorSet(arr2);
+
+// check error case
+// cacheFactorSet(arr3);
+// makeFactorSet(arr3);
