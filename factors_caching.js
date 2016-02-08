@@ -1,9 +1,21 @@
+// var memoizer = function(callback){
+//   var cache = [];
+//   return function(n){
+//     var idx = n.toString();
+//     if(cache[idx] == undefined){
+//       cache[idx] = callback(n);
+//     }
+
+//     return cache[idx];
+//   };
+// }
+
+
 var findFactors = function(numArr){
   var arrLen = numArr.length;
-  var sorted = numArr.sort(sortNumber);
 
   if(arrLen == 0)
-    throw new userException("Invalid input, Should have at least 1 element")
+    throw new Error("Invalid input, Should have at least 1 element")
 
   var factorSet = {}
 
@@ -11,22 +23,16 @@ var findFactors = function(numArr){
     var factors = []
 
     for(var j=0; j< arrLen; j++){
-      if (sorted[i] % sorted[j] == 0 && sorted[i] != sorted[j]){
-        factors.push(sorted[j])
+      if (numArr[i] % numArr[j] == 0 && numArr[i] != numArr[j]){
+        factors.push(numArr[j])
       }
     }
-    factorSet[sorted[i]] = factors
-
+    factorSet[numArr[i]] = factors;
   }
-  console.log(factorSet)
+
+  return factorSet;
 }
 
-
-// custom exception
-var userException = function(message){
-  this.message = message;
-  this.name = "userException";
-}
 
 var displayFactors = function(factorSet){
   console.log(factorSet);
@@ -36,9 +42,12 @@ var sortNumber = function(a,b){
   return a - b;
 }
 
-var arr = [20,5,2,10];
-// var arr2 = [10,2,7];
-findFactors(arr);
-findFactorsempem([]);
-// findFactors(arr2);
+
+// Test cases
+var arr = [20,5,2,7,10];
+var arr2 = [2,5,10]
+var testSet = findFactors(arr);
+var testSet2 = findFactors(arr2);
+displayFactors(testSet);
+displayFactors(testSet2);
 
